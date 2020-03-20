@@ -1,13 +1,16 @@
 // https://www.spoj.com/problems/PRIME1/
+// https://www.spoj.com/problems/PRINT/
+// segmented sieve is much faster than rabin-miller
 
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 
-const int maxN = 34567;
-const int maxM = 1e5 + 123;
+const int maxN = 46789;
+const int maxM = 1e6 + 123;
 
 int prime[maxN];
 bool p[maxM];
@@ -26,6 +29,7 @@ void segmentedsieve(){
     int N = high - low + 1;
     for(int i = 1; i <= N; ++i) p[i] = 1;
     for(int x : primeList){
+        if(x > sqrt(high)) break;
         int y = low/x * x;
         while(y < low || y == x) y += x;
         while(y <= high){
@@ -33,22 +37,17 @@ void segmentedsieve(){
             y += x;
         }
     }
-    for(int i = 1; i <= N; ++i) if(p[i]) cout << i + low - 1 << "\n";
+    for(int i = 1; i <= N; ++i) if(p[i]) printf("%d\n",i + low - 1);
 }
 int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie();
-    cout.tie();
-    
     init();
 
     int t;
-    cin >> t;
+    scanf("%d",&t);
     while(t--){
-        cin >> low >> high;
+        scanf("%d%d",&low,&high);
         while(low <= 1) ++low;
         if(low <= high) segmentedsieve();
-        cout << "\n";
     }
     return 0;
 }
