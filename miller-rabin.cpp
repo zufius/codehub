@@ -1,44 +1,67 @@
+//https://www.spoj.com/problems/PON/
+
 #include <iostream>
 #include <stdio.h>
+#include <vector>
 
-#define LL long long
+typedef unsigned long long LL;
 
 using namespace std;
+using u128 = __uint128_t;
 
-pair<int,int> factor(int n){
-    int m = 0;
-    while((n & 1) == 0){
+vector <LL> smallPrime,witness;
+
+pair<LL,LL> factor(LL n){
+    LL m = 0;
+    while(!(n & 1)){
         ++m;
         n >>= 1;
     }
     return make_pair(m,n);
 }
-LL powmod(LL x,LL y,LL z){
-    LL r = 1;
+LL modpower(LL x,LL y,LL n){
+    LL rr = 1;
     while(y){
-        if(y & 1) r = r * x % z;
-        x = x * x % z;
+        if(y & 1) rr = (u128)rr * x % n;
+        x = (u128)x*x % n;
         y >>= 1;
     }
-    return r;
+    return rr;
 }
-bool check(LL n,LL s,LL d,LL a){
-    if(n == a) return 1;
-    LL x = powmod(a,d,n);
+bool check(LL n,LL s,LL d, LL a){
+    LL x = modpower(a,d,n);
     if(x == 1) return 1;
-    for(;s > 0;s--){
+    for(;s > 0; --s){
         if(x == n - 1) return 1;
-        x = x * x % n;
+        x = (u128)x * x % n;
     }
     return 0;
 }
-bool miller(int n){
-    if(n < 2) return false;
-    if((n & 1) == 0) return n == 2;
-    pair<int,int> x = factor(n - 1);
-    return check(n,x.first,x.second,2) && check(n,x.first,x.second,7) && && check(n,x.first,x.second,61);
+bool miller(LL x){
+    if(x < 5) return x == 2 || x == 3;
+    for(LL p : smallPrime) if(x % p == 0) return 0;
+    pair<LL,LL> ft = factor(x - 1);
+    for(LL a : witness) if(!check(x,ft.first,ft.second,a)) return 0;
+    return 1;
 }
 int main(){
-    cout << miller(1e9 + 7);
+    ios_base::sync_with_stdio(false); cin.tie(); cout.tie();
+    
+    for(int i = 5; i < 100; ++i){
+        bool isprime = 1;
+        for(int j = 2; j * j <= i; ++j) if(i % j == 0) isprime = 0;
+        if(isprime){
+            smallPrime.push_back(i);
+            if(i < 41) witness.push_back(i);
+        }
+    }
+    int t;
+    cin >> t;
+    while(t--){
+        LL x;
+        cin >> x;
+        cout << (miller(x) ? "YES" : "NO");
+        cout << "\n";
+    }
     return 0;
 }
