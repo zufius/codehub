@@ -87,7 +87,7 @@ namespace SuffixArray{
 
             FOR(i,1,n) ++cnt[pos[pn[i]]];
             FOR(i,1,classes) cnt[i] += cnt[i - 1];
-            FORD(i,n,1) sa[cnt[pos[pn[i]]]--] = pn[i];
+            FORD(i,n,1) sa[cnt[pos[pn[i]]]--] = pn[i]; // for down -> extremely important
             classes = 0;
 
             FOR(i,1,n){
