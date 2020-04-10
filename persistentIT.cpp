@@ -22,7 +22,7 @@ namespace PersistentIT{
     int head[N],nodes = 0;
     struct{
         int fmin,left,right;
-    } seg[N * 4];
+    } seg[5678910];
     
     int build(int l,int r){
         int k = ++nodes;
@@ -63,7 +63,9 @@ namespace PersistentIT{
 
     int find(int k,int l,int r,int L,int R){
         if(l > R || L > r) return -oo;
-        if(L <= l && r <= R) return seg[k].fmin;
+        if(L <= l && r <= R){
+            return seg[k].fmin;
+        }
         int mid = (l + r) >> 1;
         return max(find(seg[k].left,l,mid,L,R),find(seg[k].right,mid + 1,r,L,R));
     }
@@ -73,9 +75,6 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie();
     cout.tie();
-
-    freopen("a.inp","r",stdin);
-    freopen("a.out","w",stdout);
 
     cin >> n >> m >> k;
     for(int i = 1; i <= k; ++i){
@@ -90,7 +89,7 @@ int main(){
         int a,b,x,y;
         cin >> a >> b >> x >> y;
         int v = upper_bound(all(segments),mp(mp(x - 1,oo),oo)) - segments.begin();
-        if(v < 0) cout << "no\n";
+        if(v >= (int)segments.size()) cout << "no\n";
         else{
             int vmin = PersistentIT::find(PersistentIT::head[v + 1],1,n,a,b);
             if(vmin > y) cout << "no\n";
