@@ -1,5 +1,4 @@
-// https://codeforces.com/contest/1080/problem/E
-// use overflow hashing at row 55 to reduce time complexity
+// https://codeforces.com/contest/1080/problem/E //// use overflow hashing at row 54 to reduce time complexity
 #include <iostream>
 #include <stdio.h>
 #include <algorithm>
@@ -58,7 +57,7 @@ long long createHash(int row,int l,int r){
             else f = 1;
         }
     }
-    palin[row] = ispalin;
+    palin[row << 1] = ispalin;
     return rhash;
 }
 
@@ -66,6 +65,14 @@ namespace Manacher{
     int k = 0;
     long long a[N];
     int f[N];
+
+    void init(){
+        k = 2 * n + 1;
+        for(int i = 1; i <= k; ++i){
+            a[i] = -1;
+            palin[i] = 1;
+        }
+    }
 
     bool checkPalin(int i){
         if(i & 1) return 1;
@@ -75,21 +82,15 @@ namespace Manacher{
     void run(){
         int r = 0,l = -1;
         for(int i = 1; i <= k; ++i){
-            int j = r + l - i;
-            if(r >= i){
-                if(j > 0){
-                    if(j - f[j] <= l) j = r - i;
-                    else j = f[j];
-                }else j = 0;
-            }else j = 0;
-            while(i + j + 1 <= k && i - j - 1 > 0 && checkPalin(i + j + 1) && checkPalin(i - j - 1) && a[i + j + 1] == a[i - j - 1]) ++j;
+            int j = i > r ? 0 : min(f[r + l - i],r - i);
+            while(i + j < k && i - j > 1 && palin[i + j + 1] && palin[i - j - 1] && a[i + j + 1] == a[i - j - 1]) ++j;
             f[i] = j;
             if(i + f[i] > r){
                 r = i + f[i];
                 l = i - f[i];
             }
             if(!(i & 1)){
-                if(palin[i >> 1]) res += (f[i] + 1) >> 1;
+                if(palin[i]) res += (f[i] + 1) >> 1;
             }else{
                 res += f[i] >> 1;
             }
@@ -110,14 +111,14 @@ int main(){
 
     initialization();
 
+    Manacher::init();
+
+
     for(int l = 1; l <= m; ++ l){
         for(int r = l; r <= m; ++r){
-            Manacher::k = 0;
             for(int row = 1; row <= n; ++row){
-                Manacher::a[++Manacher::k] = -1;
-                Manacher::a[++Manacher::k] = createHash(row,l,r);
+                Manacher::a[row << 1] = createHash(row,l,r);
             }
-            Manacher::a[++Manacher::k] = -1;
             Manacher::run();
         }
     }
