@@ -1,0 +1,1 @@
+- deque can be accessed by index
