@@ -1,1 +1,6 @@
 - deque can be accessed by index
+
+- binary representation of negative numbers (-x)
+  x > 0 => set the largest bit to 1 (sign-bit) => flip all the rest (0 -> 1,1 -> 0)
+  => add 1 to the current result
+ 
