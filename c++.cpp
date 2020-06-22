@@ -66,6 +66,24 @@ s.insert(2);
 auto x = s.find_by_order(2);
 cout << s.order_of_key(6) << "\n"; // 2
 
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+
+using namespace std;
+using namespace __gnu_pbds;
+
+typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+
+signed main() {
+    ordered_set d;
+    d.insert(0);
+    d.insert(1);
+    d.erase(d.lower_bound(0));
+    for (auto i: d) {
+        cout << i << ' ';
+    }
+}
+
 // 
 set <int> SS;
 
