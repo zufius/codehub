@@ -84,6 +84,11 @@ signed main() {
     }
 }
 
+- greater <int> => like set
+- greater_equal<int> => like multiset 
+    + lower_bound(x) => first pos has value < x
+    + upper_bound(x) => first pos has value <= x
+
 // 
 set <int> SS;
 
