@@ -53,7 +53,23 @@ priority_queue <int,vector<int>,greater<int>> heap; // => min
 
 next_permutation(S.begin(),S.end()); // => true/false
 
+//
 
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+//#include <functional> // for less 
 
+typedef tree<int,null_type,less<int>,rb_tree_tag,tree_order_statistics_node_update> indexed_tree;
 
+indexed_set s;
+s.insert(2);
+auto x = s.find_by_order(2);
+cout << s.order_of_key(6) << "\n"; // 2
+
+// 
+set <int> SS;
+
+SS.insert(vector_name.begin(),vector_name.end());
+
+//
 
