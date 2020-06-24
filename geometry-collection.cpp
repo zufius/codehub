@@ -8,6 +8,7 @@ const int N = 5e5 + 123;
 const int oo = 1e9 + 123;
 const long long mod = 1e9 + 7;
 const double eps = 1e-9;
+const double PI = acos(-1);
 
 typedef pair<int,int> pi;
 #define mp make_pair
@@ -160,8 +161,8 @@ double angle(Point a,Point o,Point b){ // return angle AOB in rad
     return acos((u * v) / sqrt(u.norm() * v.norm()));
 }
 double directedAngle(Point a,Point o,Point b){ // return directed angle from vector OA to OB
-    vec u(o,a),v(o,b);
-    return asin((u % v) / sqrt(u.norm() * v.norm()));
+    double rr = angle(A,O,B);
+    return ccw(A,O,B) ? -rr : rr; // it's impossible to use cross product because sin(x) = sin(180 - x) so it's too dangerous
 }
 // circle
 // pi = acos(-1.0) or pi = 2 * acos(0.0)
@@ -185,15 +186,31 @@ bool isConvex(const vector<Point> &P){
     }
     return true;
 }
-bool insidePolygon(const vector<Point> &P,Point a){
-    // *** extremely important : checking whether a is on one of the edges of the polygon
-    Point O(0,0);
-    double totalAngle = 0;
-    for(int i = 0; i < P.size(); ++i){
-        if(collinear(P[i],O,P[i + 1])) continue;
-        totalAngle += directedAngle(P[i],O,P[(i + 1) % (int)P.size()]);
+bool isInsidePolygon(vector <Point> &Q,Point p){ // my own version
+    double total = 0;
+    for(int i = 0; i < Q.size() - 1; ++i){
+        int j = i + 1;
+        if(collinear(Q[i],Q[j],p) && p.x >= min(Q[i].x,Q[j].x) && p.x <= max(Q[i].x,Q[j].x)){
+            return 1;
+        }
+        total += directedAngle(Q[i],p,Q[j]);
     }
-    return cmp(fabs(totalAngle),M_PI * 2) == 0;
+    return cmp(fabs(total),PI * 2) == 0;
+}
+
+void buildConvexHull(vector <Point> &Q){
+    sort(Q.begin(),Q.end());
+    vector <Point> convex;
+    for(int i = 0; i < Q.size(); ++i){
+        while(convex.size() > 1 && !ccw(Q[i],convex.back(),convex[convex.size() - 2])) convex.pop_back();
+        convex.push_back(Q[i]);
+    }
+    int t = convex.size();
+    for(int i = Q.size() - 1; i >= 0; --i){
+        while(convex.size() > t && !ccw(Q[i],convex.back(),convex[convex.size() - 2])) convex.pop_back();
+        convex.push_back(Q[i]);
+    }
+    Q = convex; // now Q.first() = Q.back()
 }
 
 vector <Point> cutPolygon(Point A,Point B,const vector <Point> &Q){
