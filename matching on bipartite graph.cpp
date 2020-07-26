@@ -1,78 +1,110 @@
-//https://vn.spoj.com/problems/MATCH1/
-#include <iostream>
-#include <stdio.h>
-#include <algorithm>
-#include <vector>
-#include <time.h>
-#include <set>
+// https://tlx.toki.id/problems/sg-noi-2016/C/submissions/644003
+// NOI singapore 2016 problem C
+// finding MIS on DAG -> create two copies of the graph, if there exists edge (u,v) on the original graph -> add edge (u,v') to the new bipartie graph
+// on bipartie : MIS (max independent set) = n - MVC (min vertex cover) = n - MCBM (maximum cardinality bipartite matching)
+// 
+#include <bits/stdc++.h>
 
 using namespace std;
 
-const int N = 5e5 + 123;
-const int oo = 1e9 + 123;
-const long long mod = 1e9 + 7;
-
-typedef pair<int,int> pi;
+#define taskname "A"
+#define LL long long 
+#define uLL unsigned long long 
+#define FOR(i,l,r) for(int i = l; i <= r; ++i)
+#define REP(i,l,r) for(int i = l; i < r; ++i)
+#define FORD(i,r,l) for(int i = r; i >= l; --i)
+#define REPD(i,r,l) for(int i = r; i > l; --i)
+#define sz(x) (int)((x).size())
+#define all(x) (x).begin(), (x).end()
+#define debug(x) { cerr << #x << " = " << x << endl; }
+#define sci(x) int x; scanf("%d", &x);
+#define scii(x, y) int x, y; scanf("%d %d", &x, &y);
+#define sciii(x, y, z) int x, y, z; scanf("%d %d %d", &x, &y, &z);
+#define pi pair<int,int>
+#define pii pair<int,pi>
 #define mp make_pair
-#define getSz(x) ((x).size())
+#define fi first
+#define se second
+#define pb push_back
+#define _USE_MATH_DEFINES 
+/* M_PI */
 #define SetLength2(a, n, t) a=((t*) calloc(n, sizeof(t))) + (n)/2
 
+const int N = 511;
+const LL oo = 1e17 + 11;
+
+int tcases = 1;
+
 int n,m;
-int Match[N],g[N],times = 0;
+pi a[N];
+int s[N];
+bool f[N][N];
 vector <int> e[N];
 
-bool dfs(int u){
-    g[u] = times;
-    for(int v : e[u]){
-        if(!Match[v] || (g[Match[v]] != times && dfs(Match[v]))){
-            Match[u] = v;
-            Match[v] = u;
+struct MCBM{
+    vector <int> e[N];
+    int mx[N],my[N],trace[N],g[N],times = 0;
+    
+    bool dfs(int u){
+        g[u] = times;
+        for(int v : e[u]) if(!my[v] || (g[my[v]] != times && dfs(my[v]))){
+            mx[u] = v;
+            my[v] = u;
             return 1;
         }
+        return 0;
     }
-    return 0;
-}
+    int findMCBM(){
+        int res = 0;
+        FOR(i,1,n) if(!mx[i]) { // important !!!
+            ++times;
+            dfs(i);
+        }
+        FOR(i,1,n) if(mx[i]) ++res;
+        return res;
+    }
+} biparG;
+
 void testcase(){
-    cin >> m >> n;
-    int x,y;
-    while(cin >> x >> y){
-        e[x].push_back(y + m);
+    cin >> n;
+    FOR(i,1,n){
+        cin >> a[i].fi >> a[i].se >> s[i];
     }
-    for(int i = 1; i <= m; ++i){
-        ++times;
-        dfs(i);
-    }
-    int rr = 0;
-    for(int i = 1; i <= m; ++i) if(Match[i]) ++rr;
-    cout << rr << "\n";
-    for(int i = 1; i <= m; ++i){
-        if(Match[i]){
-            cout << i << " " << Match[i] - m << "\n";
+    FOR(i,1,n){
+        FOR(j,1,n) if(a[i].se < a[j].se && max(abs(a[i].fi - a[j].fi),abs(a[i].se - a[j].se)) <= max(s[i],s[j])){
+            f[i][j] = 1;
         }
     }
+    FOR(k,1,n){
+        FOR(i,1,n)
+        FOR(j,1,n) if(f[i][k] && f[k][j]) f[i][j] = 1;
+    }
+    FOR(i,1,n){
+        FOR(j,1,n) if(f[i][j]) biparG.e[i].pb(j);
+    }
+
+    // find MVC - minimum vertex cover
+
+    int mvc = biparG.findMCBM();
+    int mis = n - mvc;
+
+    if(mis >= n){
+        cout << -1 << "\n";
+    }else cout << mis + 1 << "\n";
 }
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie();
     cout.tie();
 
-    #ifndef ONLINE_JUDGE
-        freopen("a.inp","r",stdin);
-        freopen("a.out","w",stdout);
-    #else
-        // online submission
-    #endif
+    //freopen(taskname".INP","r",stdin); freopen(taskname".OUT","w",stdout);
+    
+    //cin >> tcases;
+    
+    FOR(i,1,tcases) testcase();
 
-    // main program here
-
-    int tcase = 1;
-    //cin >> tcase;
-
-    for(int i = 1; i <= tcase; ++i) testcase();
-
-    // 
-
-    cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
+    //
     
     return 0;
 }
