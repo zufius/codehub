@@ -206,7 +206,7 @@ void buildConvexHull(vector <Point> &Q){
         convex.push_back(Q[i]);
     }
     int t = convex.size();
-    for(int i = Q.size() - 1; i >= 0; --i){
+    for(int i = Q.size() - 2; i >= 0; --i){
         while(convex.size() > t && !ccw(Q[i],convex.back(),convex[convex.size() - 2])) convex.pop_back();
         convex.push_back(Q[i]);
     }
