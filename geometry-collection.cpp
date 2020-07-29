@@ -136,7 +136,7 @@ double distToLine(Point p,Point a,Point b,Point &c){ // a should be different fr
     return (p - c).length();
 }
 bool collinear(Point A,Point B,Point C){
-    return cmp(vec(A,B) * vec(A,C),0) == 0;
+    return cmp(vec(A,B) % vec(A,C),0) == 0;
 }
 bool ccw(Point A,Point B,Point C){ // A -> B -> C
     return cmp(vec(A,B) * vec(A,C),0) > 0;
@@ -186,10 +186,11 @@ bool isConvex(const vector<Point> &P){
     }
     return true;
 }
-bool isInsidePolygon(vector <Point> &Q,Point p){ // my own version
+bool isInsidePolygon(vector <Point> &Q,Point p){ // the last point is different from the first point
+    // my own version
     double total = 0;
-    for(int i = 0; i < Q.size() - 1; ++i){
-        int j = i + 1;
+    for(int i = 0; i < Q.size(); ++i){
+        int j = (i + 1) % (int)Q.size();
         if(collinear(Q[i],Q[j],p) && p.x >= min(Q[i].x,Q[j].x) && p.x <= max(Q[i].x,Q[j].x)){
             return 1;
         }
@@ -198,7 +199,7 @@ bool isInsidePolygon(vector <Point> &Q,Point p){ // my own version
     return cmp(fabs(total),PI * 2) == 0;
 }
 
-void buildConvexHull(vector <Point> &Q){
+void buildConvexHull(vector <Point> &Q){// the last point must be different from the first point
     sort(Q.begin(),Q.end());
     vector <Point> convex;
     for(int i = 0; i < Q.size(); ++i){
@@ -211,6 +212,7 @@ void buildConvexHull(vector <Point> &Q){
         convex.push_back(Q[i]);
     }
     Q = convex; // now Q.first() = Q.back()
+    Q.pop_back();
 }
 
 vector <Point> cutPolygon(Point A,Point B,const vector <Point> &Q){
