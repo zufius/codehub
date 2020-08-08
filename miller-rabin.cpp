@@ -67,18 +67,12 @@ int main(){
 }
 
 //https://www.spoj.com/problems/FACT1/
-
-#include <iostream>
-#include <stdio.h>
-#include <algorithm>
-#include <vector>
-#include <time.h>
-#include <set>
+#include <bits/stdc++.h>
  
 using namespace std;
 using u128 = __uint128_t;
  
-const int N = 5e5 + 123;
+const int N = 51;
 const int oo = 1e9 + 123;
 const u128 mod = 1e9 + 7;
  
@@ -87,14 +81,27 @@ typedef pair<int,int> pi;
 #define LL u128
 #define getSz(x) ((x).size())
 #define SetLength2(a, n, t) a=((t*) calloc(n, sizeof(t))) + (n)/2
- 
+#define FOR(i,l,r) for(int i = l; i <= r; ++i)
+#define pb push_back
+
 int n,m;
  
 namespace MillerRabinTest{
     vector <LL> smallPrime,witness;
- 
+    
+    int P[N]; // prime sieve
+
     void init(){
- 
+        P[2] = 1;
+        FOR(i,2,sqrt(N)){
+            if(P[i]){
+                for(int j = i * i; j < N; j += i) P[j] = 1;
+            }
+        }
+        FOR(i,1,41) if(P[i]){
+            smallPrime.pb(i);
+            witness.pb(i);
+        }
     }
     pair<LL,LL> factor(LL n){
         LL m = 0;
@@ -123,8 +130,8 @@ namespace MillerRabinTest{
         return 0;
     }
     bool miller(LL x){
+        if(x < N) return P[x];
         for(LL p : smallPrime){
-            if(x == p) return 1;
             if(x % p == 0) return 0;
         }
         pair<LL,LL> ft = factor(x - 1);
@@ -206,6 +213,7 @@ string printInt(u128 x){
     return s;
 }
 void testcase(){
+    MillerRabinTest::init();
     for(int i = 2; i < 1024; ++i){
         int d = i;
         for(int j = 2; j * j <= d; ++j) if(d % j == 0){
@@ -216,12 +224,8 @@ void testcase(){
             }
             smallFactors[i].push_back(mp(j,k));
         }
-        if(i <= 41 && smallFactors[i].empty()){
-            MillerRabinTest::witness.push_back(i);
-        }
         if(d > 1) smallFactors[i].push_back(mp(d,1));
     }
-    for(int p = 2; p <= 41; ++p) if(smallFactors[p].size() == 1 && smallFactors[p].back().second == 1) MillerRabinTest::witness.push_back(p);
     u128 x;
     while(readInt(x)){
         factorize(x);
